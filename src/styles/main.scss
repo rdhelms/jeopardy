@@ -1,4 +1,90 @@
-//This is a test.
-body {
-  background: beige;
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+.gameScreen {
+  width: 100vw;
+  // height: 100vh;
+  display: flex;
+  flex-direction: column;
+  // justify-content: center;
+  align-items: center;
+  background: #333;
+}
+
+.game {
+  height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+}
+
+.scoreBox {
+  z-index: 1000;
+  width: 40%;
+  background: white;
+  padding: 10px;
+  border: 2px solid black;
+  border-radius: 10px 10px 0 0;
+}
+
+.clueBox {
+  padding: 20px;
+  height: 500px;
+  width: 700px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background: navy;
+  border: 2px solid black;
+  border-radius: 20px;
+  &.correct {
+    box-shadow: 0 0 10px 20px green;
+  }
+  &.wrong {
+    box-shadow: 0 0 10px 20px red;
+  }
+  .feedback {
+    color: white;
+    font-size: 20px;
+    margin-bottom: 30px;
+    display: none;
+  }
+}
+
+.clue {
+  padding: 20px;
+  height: 100%;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  color: white;
+  text-align: center;
+  form {
+    display: flex;
+    flex-direction: column;
+    input, button {
+      padding: 10px;
+      font-size: 20px;
+      width: 75%;
+      margin: 5px auto;
+    }
+  }
+  .category {
+    text-transform: uppercase;
+    margin-bottom: 20px;
+  }
+  .answer {
+    font-size: 15px;
+    margin: 15px;
+    opacity: 0;
+    transition: .3s all ease;
+    &:hover {
+      opacity: 1;
+    }
+  }
 }

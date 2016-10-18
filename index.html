@@ -8,6 +8,34 @@
 
 <body>
 
+  <div class='gameScreen'>
+    <div class='allGames'>
+    </div>
+  </div>
+
+  <script id="game-template" type="text/x-handlebars-template">
+    <div class='game'>
+      <h1 class='scoreBox'> Score:
+        <span class='score'>0</span>
+      </h1>
+      <div class='clueBox'>
+        <p class='feedback'>FEEDBACK</p>
+      </div>
+    </div>
+  </script>
+
+  <script id="clue-template" type="text/x-handlebars-template">
+    <div class='clue'>
+      <h1 class='category'>{{category}}</h1>
+      <h2 class='question'>{{question}}</h2>
+      <form>
+        <input class='guess' type='text'>
+        <button class='guessBtn' type='submit'>GUESS</button>
+      </form>
+      <p class='answer'>{{{answer}}}</p>
+    </div>
+  </script>
+
   <script src='lib/js/main.min.js'> </script>
 </body>
 </html>
