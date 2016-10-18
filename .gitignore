@@ -1,4 +1,5 @@
 *.map
 .sass-cache/
 .DS_Store
-/node-modules
+node-modules
+.gitignore

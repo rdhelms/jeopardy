@@ -1,64 +1,25 @@
 var Jeopardy = (function() {
   function Game() {
-    var self = this;
     this.score = 0;
     this.numCorrect = 0;
     this.numWrong = 0;
     this.elem = undefined;
-
-    this.Clue = function(props) {
-      this.allInfo = props;
-      this.category = props.category.title;
-      this.question = props.question;
-      this.answer = props.answer;
-      this.self = undefined;
-    }
-
-    this.Clue.prototype.showClue = function() {
-      //First make sure the previous clue is gone
-      $(self.elem).find('.clue').remove();
-      var source = $("#clue-template").html();
-      var template = Handlebars.compile(source);
-      var context = {
-        category: this.category,
-        question: this.question,
-        answer: this.answer
-      };
-      var html = template(context);
-      $(html).prependTo($(self.elem).find('.clueBox'));
-      $(self.elem).find('.guess').focus();
-      this.self = $(self.elem).find('.clue')[0];
-      console.log(this.self);
-    };
-
-    this.getClue = function() {
-      $.ajax({
-        'url': 'http://jservice.io/api/random',
-        'method': 'GET',
-        'success': function(response) {
-          var clue = new self.Clue(response[0]);
-          console.log(response);
-          clue.showClue();
-        },
-        'error': function(error) {
-          console.log(error);
-        }
-      });
-    }
-
-    this.startGame = function() {
+    // Start game
+    this.startGame();
+  }
+  Game.prototype = {
+    startGame: function() {
       var source = $("#game-template").html();
       var template = Handlebars.compile(source);
       var context = {};
       var html = template(context);
       $(html).prependTo($('.allGames'));
-      self.elem = $('.game').first()[0];
-      console.log(self.elem);
-      self.init(self.elem);
-      self.getClue();
-    }
-
-    this.init = function(gameElem) {
+      this.elem = $('.game').first()[0];
+      console.log(this.elem);
+      this.init(this, this.elem);
+      this.getClue(this);
+    },
+    init: function(game, gameElem) {
       $(gameElem).on('submit', 'form', function(event) {
         console.log("Clicked!", gameElem);
         event.preventDefault();
@@ -67,37 +28,73 @@ var Jeopardy = (function() {
           var guess = $(this).find('.guess').val().toLowerCase();
           var answer = $(this).siblings('.answer').text().toLowerCase();
           if (guess === answer) {
-            self.numCorrect++;
+            game.numCorrect++;
             $(gameElem).find('.clueBox').addClass('correct');
             $(gameElem).find('.feedback').text('Correct! Press enter to continue.').fadeIn();
           } else {
-            self.numWrong++;
+            game.numWrong++;
             $(gameElem).find('.clueBox').addClass('wrong');
             $(gameElem).find('.feedback').text('Incorrect! The answer was "' + answer.toUpperCase() + '". Press enter to continue.').fadeIn();
           }
-          self.score = self.numCorrect - self.numWrong;
-          $(gameElem).find('.score').text(self.score);
+          game.score = game.numCorrect - game.numWrong;
+          $(gameElem).find('.score').text(game.score);
           $(gameElem).find('.guessBtn').text('CONTINUE');
         } else if (state === 'CONTINUE') {
           $(gameElem).find('.clueBox').removeClass('correct wrong');
           $(gameElem).find('.feedback').hide();
-          self.getScore();
-          self.getClue();
+          game.getScore();
+          game.getClue(game);
         }
       });
-    }
-
-    this.getScore = function() {
+    },
+    getClue: function(game) {
+      $.ajax({
+        'url': 'http://jservice.io/api/random',
+        'method': 'GET',
+        'success': function(response) {
+          var clue = new Clue(response[0], game);
+          console.log(response);
+          clue.showClue();
+        },
+        'error': function(error) {
+          console.log(error);
+        }
+      });
+    },
+    getScore: function() {
       console.clear();
-      console.log("Correct: " + self.numCorrect);
-      console.log("Incorrect: " + self.numWrong);
-      console.log("Total Answered: " + (self.numCorrect + self.numWrong));
-      console.log("Total Score: " + self.score);
+      console.log("Correct: " + this.numCorrect);
+      console.log("Incorrect: " + this.numWrong);
+      console.log("Total Answered: " + (this.numCorrect + this.numWrong));
+      console.log("Total Score: " + this.score);
     }
-
-    // Start game
-    self.startGame();
   }
+
+  function Clue(props, game) {
+    this.game = game;
+    this.allInfo = props;
+    this.category = props.category.title;
+    this.question = props.question;
+    this.answer = props.answer;
+    this.self = undefined;
+  }
+  Clue.prototype.showClue = function() {
+    //First make sure the previous clue is gone
+    $(this.game.elem).find('.clue').remove();
+    var source = $("#clue-template").html();
+    var template = Handlebars.compile(source);
+    var context = {
+      category: this.category,
+      question: this.question,
+      answer: this.answer
+    };
+    var html = template(context);
+    $(html).prependTo($(this.game.elem).find('.clueBox'));
+    $(this.game.elem).find('.guess').focus();
+    this.self = $(this.game.elem).find('.clue')[0];
+    console.log(this.self);
+  }
+
 
   function newGame() {
     var newGame = new Game();
