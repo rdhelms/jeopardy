@@ -26,6 +26,7 @@ header {
     background: black;
     border-radius: 0 0 20px 20px;
     font-size: 20px;
+    outline-style: none;
   }
 }
 
@@ -36,7 +37,7 @@ header {
   flex-direction: column;
   // justify-content: center;
   align-items: center;
-  background: #333;
+  background: url('../../images/pool_table.png');
 }
 
 .game {
@@ -72,7 +73,7 @@ header {
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  background: navy;
+  background: url('../../images/dark_brick_wall.png');
   border: 2px solid black;
   border-radius: 20px;
   &.correct {

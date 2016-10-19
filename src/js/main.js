@@ -117,6 +117,11 @@ var Jeopardy = (function() {
     return allGames;
   }
 
+  // Setup the new game button
+  $('header button').on('click', function() {
+    makeGame();
+  });
+
   var allGames = [];
   if (localStorage.allGames) {
     console.log("Old games");
