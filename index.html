@@ -8,6 +8,10 @@
 
 <body>
 
+  <header>
+    <button>New Game</button>
+  </header>
+
   <div class='gameScreen'>
     <div class='allGames'>
     </div>
@@ -15,8 +19,11 @@
 
   <script id="game-template" type="text/x-handlebars-template">
     <div class='game'>
-      <h1 class='scoreBox'> Score:
-        <span class='score'>0</span>
+      <h1 class='scoreBox'>
+        Score: <span class='score'>{{score}}</span>
+        Correct: <span class='numCorrect'>{{correct}}</span>
+        Incorrect: <span class='numIncorrect'>{{incorrect}}</span>
+        Total: <span class='numTotal'>{{total}}</span>
       </h1>
       <div class='clueBox'>
         <p class='feedback'>FEEDBACK</p>

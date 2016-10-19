@@ -1,8 +1,23 @@
 var Jeopardy = (function() {
-  function Game() {
-    this.score = 0;
-    this.numCorrect = 0;
-    this.numWrong = 0;
+  var storage = {
+    set: function() {
+      localStorage.allGames = JSON.stringify(allGames);
+    },
+    get: function() {
+      var oldGames = JSON.parse(localStorage.allGames);
+      for (var index = 0; index < oldGames.length; index++) {
+        var oldGame = oldGames[index];
+        var newGame = new Game(oldGame.numCorrect, oldGame.numWrong, oldGame.score);
+        allGames.push(newGame);
+      }
+    }
+  }
+
+
+  function Game(numCorrect, numWrong, score) {
+    this.score = score || 0;
+    this.numCorrect = numCorrect || 0;
+    this.numWrong = numWrong || 0;
     this.elem = undefined;
     // Start game
     this.startGame();
@@ -11,17 +26,21 @@ var Jeopardy = (function() {
     startGame: function() {
       var source = $("#game-template").html();
       var template = Handlebars.compile(source);
-      var context = {};
+      var context = {
+        score: this.score,
+        correct: this.numCorrect,
+        incorrect: this.numWrong,
+        total: (this.numCorrect + this.numWrong)
+      };
       var html = template(context);
       $(html).prependTo($('.allGames'));
       this.elem = $('.game').first()[0];
-      console.log(this.elem);
       this.init(this, this.elem);
       this.getClue(this);
     },
     init: function(game, gameElem) {
+      // Setup the event handler for the form submission
       $(gameElem).on('submit', 'form', function(event) {
-        console.log("Clicked!", gameElem);
         event.preventDefault();
         var state = $(gameElem).find('.guessBtn').text();
         if (state === 'GUESS') {
@@ -38,13 +57,16 @@ var Jeopardy = (function() {
           }
           game.score = game.numCorrect - game.numWrong;
           $(gameElem).find('.score').text(game.score);
+          $(gameElem).find('.numCorrect').text(game.numCorrect);
+          $(gameElem).find('.numIncorrect').text(game.numWrong);
+          $(gameElem).find('.numTotal').text(game.numCorrect + game.numWrong);
           $(gameElem).find('.guessBtn').text('CONTINUE');
         } else if (state === 'CONTINUE') {
           $(gameElem).find('.clueBox').removeClass('correct wrong');
           $(gameElem).find('.feedback').hide();
-          game.getScore();
           game.getClue(game);
         }
+        storage.set();
       });
     },
     getClue: function(game) {
@@ -53,20 +75,12 @@ var Jeopardy = (function() {
         'method': 'GET',
         'success': function(response) {
           var clue = new Clue(response[0], game);
-          console.log(response);
           clue.showClue();
         },
         'error': function(error) {
           console.log(error);
         }
       });
-    },
-    getScore: function() {
-      console.clear();
-      console.log("Correct: " + this.numCorrect);
-      console.log("Incorrect: " + this.numWrong);
-      console.log("Total Answered: " + (this.numCorrect + this.numWrong));
-      console.log("Total Score: " + this.score);
     }
   }
 
@@ -92,22 +106,30 @@ var Jeopardy = (function() {
     $(html).prependTo($(this.game.elem).find('.clueBox'));
     $(this.game.elem).find('.guess').focus();
     this.self = $(this.game.elem).find('.clue')[0];
-    console.log(this.self);
   }
 
-
-  function newGame() {
+  function makeGame() {
     var newGame = new Game();
     allGames.push(newGame);
   }
 
+  function getGames() {
+    return allGames;
+  }
+
   var allGames = [];
-  var game = new Game();
-  allGames.push(game);
+  if (localStorage.allGames) {
+    console.log("Old games");
+    storage.get();
+  } else {
+    console.log("New game");
+    var newGame = new Game();
+    allGames.push(newGame);
+  }
 
   // Return object for user
   return {
-    allGames: allGames,
-    newGame: newGame
-  }
+    getGames: getGames,
+    makeGame: makeGame
+  };
 })();
